@@ -4,13 +4,17 @@ import com.soilhumidity.backend.config.security.JwtUtil;
 import com.soilhumidity.backend.dto.Response;
 import com.soilhumidity.backend.dto.auth.ProfileDto;
 import com.soilhumidity.backend.dto.user.ProfilePictureUpdateDto;
+import com.soilhumidity.backend.dto.user.UserDeviceDto;
 import com.soilhumidity.backend.enums.EErrorCode;
 import com.soilhumidity.backend.factory.UserFactory;
+import com.soilhumidity.backend.model.UserDevice;
+import com.soilhumidity.backend.repository.UserDeviceRepository;
 import com.soilhumidity.backend.repository.UserRepository;
 import com.soilhumidity.backend.util.ImageUtils;
 import com.soilhumidity.backend.util.service.storage.IStorageService;
 import com.soilhumidity.backend.validator.UserValidator;
 import lombok.AllArgsConstructor;
+import org.hibernate.Hibernate;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
@@ -32,10 +36,12 @@ public class UserService {
     private final JwtUtil jwtTokenUtil;
     private final IStorageService storageService;
     private final MessageSourceAccessor messageSource;
+    private final UserDeviceRepository userDeviceRepository;
 
     @Transactional(readOnly = true)
     public Response<ProfileDto> getProfile(@NotNull String token) {
         var user = userRepository.getById(jwtTokenUtil.getUserId(token));
+        Hibernate.initialize(user.getUserDevices());
         return Response.ok(userFactory.createProfileDto(user));
     }
 
@@ -88,5 +94,28 @@ public class UserService {
             return Response.notOk(messageSource
                     .getMessage("update_profile_picture.io.fail"), EErrorCode.UNHANDLED);
         }
+    }
+
+    @Transactional
+    public Response<UserDeviceDto> addUserDevice(String deviceId, String token) {
+        var userId = jwtTokenUtil.getUserId(token);
+        var validation = userDeviceRepository.existsByDeviceId(deviceId);
+
+        if (validation) {
+            return Response.notOk("Device already exists", EErrorCode.BAD_REQUEST);
+        }
+
+        var maybeUser = userRepository.findById(userId);
+
+        if (maybeUser.isEmpty()) {
+            return Response.notOk(messageSource.getMessage("update_profile_picture.user.not_found"),
+                    EErrorCode.BAD_REQUEST);
+        }
+
+        var user = maybeUser.get();
+
+        var saved = userDeviceRepository.save(new UserDevice(deviceId, user));
+
+        return Response.ok(userFactory.createUserDeviceDto(saved));
     }
 }

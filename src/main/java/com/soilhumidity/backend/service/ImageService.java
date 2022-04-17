@@ -39,7 +39,7 @@ public class ImageService {
     }
 
     @Transactional
-    public Response<List<String>> getImages(PointZ point, Float radius) {
+    public Response<List<String>> getImages(PointZ point, Double radius) {
 
         var images =
                 imageRepository.findAll((root, criteriaQuery, criteriaBuilder) ->

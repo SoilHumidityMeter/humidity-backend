@@ -11,18 +11,18 @@ import lombok.NoArgsConstructor;
 public class PointZ {
 
     @ApiModelProperty(example = "-1.0")
-    private Float x;
+    private Double x;
 
     @ApiModelProperty(example = "-1.0")
-    private Float y;
+    private Double y;
 
     @ApiModelProperty(example = "-1.0")
-    private Float z;
+    private Double z;
 
     @ApiModelProperty(example = "-1.0")
-    private Float w;
+    private Double w;
 
-    public static PointZ of(Float x, Float y, Float z) {
-        return new PointZ(x, y, z, 1.0f);
+    public static PointZ of(Double x, Double y, Double z) {
+        return new PointZ(x, y, z, 1.0d);
     }
 }

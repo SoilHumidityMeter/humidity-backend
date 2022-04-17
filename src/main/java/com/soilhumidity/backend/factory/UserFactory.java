@@ -1,20 +1,23 @@
 package com.soilhumidity.backend.factory;
 
+import com.soilhumidity.backend.config.AppConfig;
 import com.soilhumidity.backend.dto.auth.ProfileDto;
 import com.soilhumidity.backend.dto.auth.RegisterDto;
+import com.soilhumidity.backend.dto.auth.RegisterRequest;
 import com.soilhumidity.backend.dto.generic.UserCreateRequest;
+import com.soilhumidity.backend.dto.user.UserDeviceDto;
 import com.soilhumidity.backend.dto.user.UserUpdateRequest;
 import com.soilhumidity.backend.enums.ERole;
+import com.soilhumidity.backend.model.User;
+import com.soilhumidity.backend.model.UserDevice;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import com.soilhumidity.backend.config.AppConfig;
-import com.soilhumidity.backend.dto.auth.RegisterRequest;
-import com.soilhumidity.backend.model.User;
 
 import java.util.Locale;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -60,7 +63,8 @@ public class UserFactory {
                 user.getPhoneNumber(),
                 user.getCreatedOn(),
                 user.getProfilePicture(),
-                ERole.stringValueOf(user.getRole())
+                ERole.stringValueOf(user.getRole()),
+                user.getUserDevices().stream().map(this::createUserDeviceDto).collect(Collectors.toList())
         );
     }
 
@@ -92,6 +96,14 @@ public class UserFactory {
                 user.getCreatedOn(),
                 !user.isAccountNonLocked(),
                 user.isAccountNonExpired()
+        );
+    }
+
+    public UserDeviceDto createUserDeviceDto(UserDevice saved) {
+        return new UserDeviceDto(
+                saved.getDeviceId(),
+                saved.getId(),
+                saved.getCreatedAt()
         );
     }
 }

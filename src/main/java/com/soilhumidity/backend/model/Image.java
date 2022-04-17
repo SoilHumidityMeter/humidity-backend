@@ -23,18 +23,18 @@ public class Image {
     private String name;
 
     @Column
-    private Float x;
+    private Double x;
 
     @Column
-    private Float y;
+    private Double y;
 
     @Column
-    private Float z;
+    private Double z;
 
     @Column
     private String url;
 
-    public Image(String name, Float x, Float y, Float z) {
+    public Image(String name, Double x, Double y, Double z) {
         this.name = name;
         this.x = x;
         this.y = y;

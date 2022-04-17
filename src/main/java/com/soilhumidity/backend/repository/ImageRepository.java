@@ -16,5 +16,5 @@ public interface ImageRepository extends JpaRepository<Image, Long>, JpaSpecific
             "values(?1,?2,?3,?4) " +
             "on duplicate key update " +
             "x = ?2,y = ?3,z = ?4", nativeQuery = true)
-    void saveOrUpdate(String name, Float x, Float y, Float z);
+    void saveOrUpdate(String name, Double x, Double y, Double z);
 }

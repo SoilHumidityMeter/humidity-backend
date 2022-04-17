@@ -3,6 +3,8 @@ package com.soilhumidity.backend.controller;
 import com.soilhumidity.backend.dto.Response;
 import com.soilhumidity.backend.dto.auth.ProfileDto;
 import com.soilhumidity.backend.dto.user.ProfilePictureUpdateDto;
+import com.soilhumidity.backend.dto.user.UserDeviceDto;
+import com.soilhumidity.backend.service.UserService;
 import com.soilhumidity.backend.util.annotations.ApiInformation;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -14,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import com.soilhumidity.backend.service.UserService;
 
 @RestController
 @Api(tags = UserController.TAG)
@@ -34,6 +35,16 @@ public class UserController {
             @ApiParam(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token
     ) {
         return userService.getProfile(token).toResponseEntity();
+    }
+
+    @PostMapping(
+            path = "/me/device")
+    @ApiOperation(value = "Add user device.")
+    public ResponseEntity<Response<UserDeviceDto>> addUserDevice(
+            @ApiParam(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token,
+            @RequestParam String deviceId
+    ) {
+        return userService.addUserDevice(deviceId, token).toResponseEntity();
     }
 
     @PutMapping(

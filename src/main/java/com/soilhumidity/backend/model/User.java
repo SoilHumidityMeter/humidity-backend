@@ -79,6 +79,10 @@ public class User implements UserDetails, Serializable {
 
     @Getter
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private final Set<UserDevice> userDevices = new HashSet<>();
+
+    @Getter
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private final Set<VerificationCode> verificationCodes = new HashSet<>();
 
     @URL

@@ -30,10 +30,10 @@ public class ImageSearchController {
     @GetMapping
     @ApiOperation(value = "Get images by radius")
     public ResponseEntity<Response<List<String>>> getImages(
-            @RequestParam Float x,
-            @RequestParam Float y,
-            @RequestParam Float z,
-            @RequestParam(defaultValue = "5.0", required = false) Float radius) {
+            @RequestParam Double x,
+            @RequestParam Double y,
+            @RequestParam Double z,
+            @RequestParam(defaultValue = "5.0", required = false) Double radius) {
         return imageService.getImages(PointZ.of(x, y, z), radius).toResponseEntity();
     }
 
