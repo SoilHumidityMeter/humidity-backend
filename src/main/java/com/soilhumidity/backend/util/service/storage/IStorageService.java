@@ -20,6 +20,8 @@ public interface IStorageService {
 
     InputStream get(Path path);
 
+    URL getS3Url(String objName);
+
     void delete(Path path);
 
     void delete(URL url);

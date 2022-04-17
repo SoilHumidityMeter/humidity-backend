@@ -1,5 +1,8 @@
 package com.soilhumidity.backend.util.service.storage.s3;
 
+import com.soilhumidity.backend.config.AwsConfig;
+import com.soilhumidity.backend.exception.MimeTypeDetectException;
+import com.soilhumidity.backend.util.service.storage.IStorageService;
 import lombok.SneakyThrows;
 import org.apache.commons.compress.utils.FileNameUtils;
 import org.codehaus.plexus.util.FileUtils;
@@ -7,34 +10,78 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
-import com.soilhumidity.backend.config.AwsConfig;
-import com.soilhumidity.backend.exception.MimeTypeDetectException;
-import com.soilhumidity.backend.util.service.storage.IStorageService;
 
 import javax.annotation.PreDestroy;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Component
 public class S3Service implements IStorageService {
     private final AwsConfig awsConfig;
     private final S3Client s3Client;
+    private final String baseUrl;
+    private List<String> prefixes = new ArrayList<>();
 
     public S3Service(AwsConfig awsConfig) {
         this.awsConfig = awsConfig;
+        baseUrl = "https://" + awsConfig.getBucketName() + "." + awsConfig.getRegion() + "." + awsConfig.getBaseUrl() + "/";
         s3Client = S3Client.builder()
                 .credentialsProvider(StaticCredentialsProvider.create(awsConfig.getCredentials()))
-                .region(awsConfig.getRegion())
+                .endpointOverride(awsConfig.getEndpoint())
+                .region(Region.of(awsConfig.getRegion()))
                 .build();
+        setPrefixes();
+    }
+
+    private void setPrefixes() {
+        prefixes = s3Client.listObjects(ListObjectsRequest.builder()
+                        .delimiter("/").bucket(awsConfig.getBucketName()).build()).
+                commonPrefixes().stream().map(CommonPrefix::prefix).
+                collect(java.util.stream.Collectors.toList());
+    }
+
+    private URL getUrl(String key) {
+        try {
+            return new URL(baseUrl + key);
+        } catch (MalformedURLException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public URL getS3Url(String name) {
+        if (name.split("/").length > 1) {
+            return getUrl(baseUrl + name);
+        }
+
+        String val = "";
+
+        for (String prefix : prefixes) {
+            try {
+                s3Client.headObject(HeadObjectRequest.builder()
+                        .bucket(awsConfig.getBucketName()).key(prefix + name).build());
+                val = baseUrl + prefix + name;
+                break;
+            } catch (NoSuchKeyException ignored) {
+
+            }
+
+        }
+        return getUrl(val);
+
     }
 
     @Override
@@ -203,4 +250,5 @@ public class S3Service implements IStorageService {
     public void destroy() {
         s3Client.close();
     }
+
 }
