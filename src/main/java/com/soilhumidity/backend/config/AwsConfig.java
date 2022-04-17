@@ -5,9 +5,9 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.regions.Region;
 
 import javax.annotation.PostConstruct;
+import java.net.URI;
 
 @Configuration
 public class AwsConfig {
@@ -25,22 +25,25 @@ public class AwsConfig {
     private String bucketName;
 
     @Getter
-    @Value("#{T(software.amazon.awssdk.regions.Region).of('${soilhm.aws.s3.region}')}")
-    private Region region;
+    @Value("${soilhm.aws.s3.region}")
+    private String region;
 
     @Getter
-    private String baseUrl = null;
+    @Value("${soilhm.aws.s3.base-url}")
+    private String baseUrl;
 
     @Getter
     private AwsBasicCredentials credentials = null;
+
+    @Getter
+    private URI endpoint = null;
 
     @PostConstruct()
     protected void init() {
         if (!profile.equals("dev") && !profile.equals("prod")) {
             throw new IllegalStateException("Profile must be start with 'dev' or 'prod'.");
         }
-
-        baseUrl = profile;
+        endpoint = URI.create("https://" + region + "." + baseUrl);
         credentials = AwsBasicCredentials.create(accessKey, secretKey);
     }
 
