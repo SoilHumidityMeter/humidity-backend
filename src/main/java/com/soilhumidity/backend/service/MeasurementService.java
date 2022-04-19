@@ -3,6 +3,7 @@ package com.soilhumidity.backend.service;
 import com.soilhumidity.backend.config.security.JwtUtil;
 import com.soilhumidity.backend.dto.PageFilter;
 import com.soilhumidity.backend.dto.Response;
+import com.soilhumidity.backend.dto.measurement.IpGeolocationResponse;
 import com.soilhumidity.backend.dto.measurement.MeasurementDto;
 import com.soilhumidity.backend.factory.NotificationFactory;
 import com.soilhumidity.backend.mapper.MeasurementMapper;
@@ -10,17 +11,21 @@ import com.soilhumidity.backend.model.Measurement;
 import com.soilhumidity.backend.repository.MeasurementRepository;
 import com.soilhumidity.backend.repository.UserDeviceRepository;
 import com.soilhumidity.backend.specs.factory.MeasurementSpecFactory;
+import com.soilhumidity.backend.util.HttpClient;
 import com.soilhumidity.backend.util.service.notification.NotificationException;
 import com.soilhumidity.backend.util.service.notification.onesignal.OneSignalService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Point;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Set;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class MeasurementService {
 
     private final MeasurementRepository measurementRepository;
@@ -37,8 +42,13 @@ public class MeasurementService {
 
     private final NotificationFactory notificationFactory;
 
+    private final HttpClient httpClient;
+
+    @Value("${soilhm.ip-geolocation-api.url}")
+    private String ipGeolocationApiUrl;
+
     @Transactional
-    public void insertMeasurement(String deviceId, Double humidity) {
+    public void insertMeasurement(String deviceId, Double humidity, String ip) {
 
         var maybeDevice = userDeviceRepository.findByDeviceId(deviceId);
 
@@ -47,8 +57,18 @@ public class MeasurementService {
         }
 
         var device = maybeDevice.get();
+        var geoLoc = httpClient.readResult(
+                httpClient.get(ipGeolocationApiUrl + ip,
+                        Map.of("fields", "status,lat,lon")),
+                IpGeolocationResponse.class);
 
-        measurementRepository.save(new Measurement(humidity, device));
+        Point point = null;
+
+        if (geoLoc.isOk()) {
+            point = geoLoc.getData().asPoint();
+        }
+
+        measurementRepository.save(new Measurement(humidity, device, point));
 
         try {
             oneSignalService.send(notificationFactory.createPersonalNotification(

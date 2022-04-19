@@ -5,6 +5,7 @@ import com.soilhumidity.backend.dto.seed.SeedDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.geo.Point;
 
 import java.util.Date;
 import java.util.List;
@@ -24,4 +25,6 @@ public class MeasurementDto {
     private Date createdAt;
 
     private List<SeedDto> eligibleSeeds;
+
+    private Point point;
 }

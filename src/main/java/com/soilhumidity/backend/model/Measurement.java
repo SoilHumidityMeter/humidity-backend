@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
+import org.locationtech.jts.geom.Point;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -34,9 +35,15 @@ public class Measurement {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    public Measurement(Double humidity, UserDevice userDevice) {
+    @Column
+    @Basic
+    @Setter
+    private Point point;
+
+    public Measurement(Double humidity, UserDevice userDevice, Point point) {
         this.humidity = humidity;
         this.userDevice = userDevice;
+        this.point = point;
     }
-    
+
 }

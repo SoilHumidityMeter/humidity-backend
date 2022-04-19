@@ -2,6 +2,7 @@ package com.soilhumidity.backend.mapper;
 
 import com.soilhumidity.backend.dto.measurement.MeasurementDto;
 import com.soilhumidity.backend.factory.SeedFactory;
+import com.soilhumidity.backend.factory.SpatialFactory;
 import com.soilhumidity.backend.model.Measurement;
 import com.soilhumidity.backend.repository.SeedRepository;
 import lombok.AllArgsConstructor;
@@ -23,7 +24,8 @@ public class MeasurementMapper {
                 measurement.getHumidity(),
                 measurement.getUserDevice().getId(),
                 measurement.getCreatedAt(),
-                seedRepository.getAllByHumidityDownGreaterThanEqualAndHumidityUpLessThanEqual(measurement.getHumidity(), measurement.getHumidity()).stream().map(seedFactory::createSeedDto).collect(Collectors.toList())
+                seedRepository.getAllByHumidityDownGreaterThanEqualAndHumidityUpLessThanEqual(measurement.getHumidity(), measurement.getHumidity()).stream().map(seedFactory::createSeedDto).collect(Collectors.toList()),
+                measurement.getPoint() != null ? SpatialFactory.createSpringPoint(measurement.getPoint()) : null
         );
     }
 }
