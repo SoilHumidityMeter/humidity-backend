@@ -22,9 +22,10 @@ public class IntegrationController {
     @PostMapping
     public ResponseEntity<Void> insertMeasurement(
             @RequestParam String deviceId,
-            @RequestParam Double humidity
+            @RequestParam Double humidity,
+            @RequestParam String ip
     ) {
-        LoggableFuture.runAsync(() -> measurementService.insertMeasurement(deviceId, humidity));
+        LoggableFuture.runAsync(() -> measurementService.insertMeasurement(deviceId, humidity, ip));
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
