@@ -31,6 +31,10 @@ public class Response<T> {
         return new Response<>(message, code);
     }
 
+    public static <K> Response<K> notOk(ErrorObject error) {
+        return new Response<>(error.getMessage(), error.getCode());
+    }
+
     @JsonIgnore
     public boolean isOk() {
         return error == null;
