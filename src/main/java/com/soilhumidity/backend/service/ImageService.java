@@ -43,17 +43,29 @@ public class ImageService {
 
         var images =
                 imageRepository.findAll((root, criteriaQuery, criteriaBuilder) ->
-                        criteriaBuilder.and(
-                                criteriaBuilder.lessThanOrEqualTo(criteriaBuilder.abs(
-                                        criteriaBuilder.diff(root.get(Image_.x), point.getX())
-                                ), radius),
-                                criteriaBuilder.lessThanOrEqualTo(criteriaBuilder.abs(
-                                        criteriaBuilder.diff(root.get(Image_.y), point.getY())
-                                ), radius),
-                                criteriaBuilder.lessThanOrEqualTo(criteriaBuilder.abs(
-                                        criteriaBuilder.diff(root.get(Image_.z), point.getZ())
-                                ), radius)
-                        ));
+                {
+
+                    criteriaQuery.orderBy(
+                            criteriaBuilder.asc(
+                                    criteriaBuilder.abs(criteriaBuilder.diff(root.get(Image_.x), point.getX()))),
+                            criteriaBuilder.asc(
+                                    criteriaBuilder.abs(criteriaBuilder.diff(root.get(Image_.y), point.getY()))),
+                            criteriaBuilder.asc(
+                                    criteriaBuilder.abs(criteriaBuilder.diff(root.get(Image_.z), point.getZ())))
+                    );
+
+                    return criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(criteriaBuilder.abs(
+                                    criteriaBuilder.diff(root.get(Image_.x), point.getX())
+                            ), radius),
+                            criteriaBuilder.lessThanOrEqualTo(criteriaBuilder.abs(
+                                    criteriaBuilder.diff(root.get(Image_.y), point.getY())
+                            ), radius),
+                            criteriaBuilder.lessThanOrEqualTo(criteriaBuilder.abs(
+                                    criteriaBuilder.diff(root.get(Image_.z), point.getZ())
+                            ), radius)
+                    );
+                });
 
         var urls = new ArrayList<String>();
 

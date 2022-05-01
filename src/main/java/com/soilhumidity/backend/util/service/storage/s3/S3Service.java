@@ -64,7 +64,7 @@ public class S3Service implements IStorageService {
     @Override
     public URL getS3Url(String name) {
         if (name.split("/").length > 1) {
-            return getUrl(baseUrl + name);
+            return getUrl(name);
         }
 
         String val = "";
