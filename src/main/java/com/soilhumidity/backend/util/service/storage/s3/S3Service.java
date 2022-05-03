@@ -73,7 +73,7 @@ public class S3Service implements IStorageService {
             try {
                 s3Client.headObject(HeadObjectRequest.builder()
                         .bucket(awsConfig.getBucketName()).key(prefix + name).build());
-                val = baseUrl + prefix + name;
+                val = prefix + name;
                 break;
             } catch (NoSuchKeyException ignored) {
 
