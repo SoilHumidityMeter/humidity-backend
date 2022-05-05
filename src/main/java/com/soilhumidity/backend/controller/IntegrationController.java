@@ -1,7 +1,6 @@
 package com.soilhumidity.backend.controller;
 
 import com.soilhumidity.backend.service.MeasurementService;
-import com.soilhumidity.backend.util.LoggableFuture;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ public class IntegrationController {
             @RequestParam Double humidity,
             @RequestParam String ip
     ) {
-        LoggableFuture.runAsync(() -> measurementService.insertMeasurement(deviceId, humidity, ip));
+        measurementService.insertMeasurement(deviceId, humidity, ip);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
