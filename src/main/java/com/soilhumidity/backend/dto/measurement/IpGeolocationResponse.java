@@ -13,9 +13,7 @@ import org.locationtech.jts.geom.Point;
 @Getter
 @Setter
 public class IpGeolocationResponse {
-
-    private boolean status;
-
+    
     private Double lon;
 
     private Double lat;

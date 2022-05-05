@@ -59,7 +59,7 @@ public class MeasurementService {
         var device = maybeDevice.get();
         var geoLoc = httpClient.readResult(
                 httpClient.get(ipGeolocationApiUrl + ip,
-                        Map.of("fields", "status,lat,lon")),
+                        Map.of("fields", "lat,lon")),
                 IpGeolocationResponse.class);
 
         Point point = null;
@@ -76,8 +76,8 @@ public class MeasurementService {
                             device.getDeviceId() + " measured new humidity level, check measurements to see eligible seeds",
                             "Soil Cloud", device.getUser())
                     , Set.of(device.getUser())));
-        } catch (NotificationException e) {
-            e.printStackTrace();
+        } catch (NotificationException ignored) {
+
         }
     }
 

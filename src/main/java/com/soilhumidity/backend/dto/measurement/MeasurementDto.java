@@ -1,5 +1,6 @@
 package com.soilhumidity.backend.dto.measurement;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.soilhumidity.backend.dto.seed.SeedDto;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,7 @@ public class MeasurementDto {
 
     private Long deviceId;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private Date createdAt;
 
     private List<SeedDto> eligibleSeeds;
