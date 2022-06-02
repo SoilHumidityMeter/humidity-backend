@@ -24,7 +24,7 @@ public class MeasurementMapper {
                 measurement.getHumidity(),
                 measurement.getUserDevice().getId(),
                 measurement.getCreatedAt(),
-                seedRepository.getAllByHumidityDownGreaterThanEqualAndHumidityUpLessThanEqual(measurement.getHumidity(), measurement.getHumidity()).stream().map(seedFactory::createSeedDto).collect(Collectors.toList()),
+                seedRepository.getAllByHumidityDownLessThanEqualAndHumidityUpGreaterThanEqual(measurement.getHumidity(), measurement.getHumidity()).stream().map(seedFactory::createSeedDto).collect(Collectors.toList()),
                 measurement.getPoint() != null ? SpatialFactory.createSpringPoint(measurement.getPoint()) : null
         );
     }

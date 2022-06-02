@@ -21,8 +21,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -91,5 +93,12 @@ public class MeasurementService {
                 pageFilter.asPageable());
 
         return Response.ok(page.map(measurementMapper::map));
+    }
+
+    @Transactional(readOnly = true)
+    public Response<List<MeasurementDto>> getMeasurementsWhole() {
+        var all = measurementRepository.findAll();
+
+        return Response.ok(all.stream().map(measurementMapper::map).collect(Collectors.toList()));
     }
 }

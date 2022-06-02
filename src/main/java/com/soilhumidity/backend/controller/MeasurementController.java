@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @Api(tags = MeasurementController.TAG)
 @RequestMapping(MeasurementController.TAG)
@@ -32,5 +34,10 @@ public class MeasurementController {
             PageFilter pageFilter,
             @ApiParam(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token) {
         return measurementService.getMeasurements(pageFilter, token).toResponseEntity();
+    }
+
+    @GetMapping("map")
+    public ResponseEntity<Response<List<MeasurementDto>>> getMeasurementsWhole() {
+        return measurementService.getMeasurementsWhole().toResponseEntity();
     }
 }

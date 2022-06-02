@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface SeedRepository extends JpaRepository<Seed, Long> {
-    
-    List<Seed> getAllByHumidityDownGreaterThanEqualAndHumidityUpLessThanEqual(Double down, Double up);
+
+    List<Seed> getAllByHumidityDownLessThanEqualAndHumidityUpGreaterThanEqual(Double down, Double up);
 
 }
