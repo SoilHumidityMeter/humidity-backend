@@ -17,6 +17,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @Api(tags = UserController.TAG)
 @ApiInformation(tag = UserController.TAG, description = "User related endpoints and CRUD operations")
@@ -45,6 +47,15 @@ public class UserController {
             @RequestParam String deviceId
     ) {
         return userService.addUserDevice(deviceId, token).toResponseEntity();
+    }
+
+    @GetMapping(
+            path = "/me/device")
+    @ApiOperation(value = "Get user devices.")
+    public ResponseEntity<Response<List<UserDeviceDto>>> getUserDevices(
+            @ApiParam(hidden = true) @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = false) String token
+    ) {
+        return userService.getUserDevices(token).toResponseEntity();
     }
 
     @PutMapping(

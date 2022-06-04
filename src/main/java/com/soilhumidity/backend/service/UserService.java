@@ -25,6 +25,7 @@ import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -117,5 +118,17 @@ public class UserService {
         var saved = userDeviceRepository.save(new UserDevice(deviceId, user));
 
         return Response.ok(userFactory.createUserDeviceDto(saved));
+    }
+
+    @Transactional(readOnly = true)
+    public Response<List<UserDeviceDto>> getUserDevices(String token) {
+        var userId = jwtTokenUtil.getUserId(token);
+        var user = userRepository.getById(userId);
+
+        Hibernate.initialize(user.getUserDevices());
+        
+        return Response.ok(user.getUserDevices().stream().map(userFactory::createUserDeviceDto).collect(
+                java.util.stream.Collectors.toList()
+        ));
     }
 }
