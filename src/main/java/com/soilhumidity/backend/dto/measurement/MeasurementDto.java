@@ -3,6 +3,7 @@ package com.soilhumidity.backend.dto.measurement;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.soilhumidity.backend.dto.seed.SeedDto;
+import com.soilhumidity.backend.dto.user.UserDeviceDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,7 @@ public class MeasurementDto {
 
     private Double humidity;
 
-    private Long deviceId;
+    private UserDeviceDto userDevice;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private Date createdAt;

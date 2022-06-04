@@ -101,4 +101,11 @@ public class MeasurementService {
 
         return Response.ok(all.stream().map(measurementMapper::map).collect(Collectors.toList()));
     }
+
+    @Transactional(readOnly = true)
+    public Response<MeasurementDto> getAvgMeasurements(String city) {
+        var avg = measurementRepository.getAverageHumidity();
+
+        return Response.ok(measurementMapper.map(avg));
+    }
 }
