@@ -1,6 +1,7 @@
 package com.soilhumidity.backend.mapper;
 
 import com.soilhumidity.backend.dto.measurement.MeasurementDto;
+import com.soilhumidity.backend.dto.measurement.WeatherForecastResponse;
 import com.soilhumidity.backend.dto.user.UserDeviceDto;
 import com.soilhumidity.backend.factory.SeedFactory;
 import com.soilhumidity.backend.factory.SpatialFactory;
@@ -26,6 +27,7 @@ public class MeasurementMapper {
                 null,
                 null,
                 seedRepository.getAllByHumidityDownLessThanEqualAndHumidityUpGreaterThanEqual(avg, avg).stream().map(seedFactory::createSeedDto).collect(Collectors.toList()),
+                null,
                 null
         );
     }
@@ -38,6 +40,13 @@ public class MeasurementMapper {
                 measurement.getCreatedAt(),
                 seedRepository.getAllByHumidityDownLessThanEqualAndHumidityUpGreaterThanEqual(measurement.getHumidity(), measurement.getHumidity()).stream().map(seedFactory::createSeedDto).collect(Collectors.toList()),
                 measurement.getPoint() != null ? SpatialFactory.createSpringPoint(measurement.getPoint()) : null
+                , null
         );
+    }
+
+    public MeasurementDto map(Measurement mesa, WeatherForecastResponse data) {
+        var mapped = map(mesa);
+        mapped.setWeather(data);
+        return mapped;
     }
 }

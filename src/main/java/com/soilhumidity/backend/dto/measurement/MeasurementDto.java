@@ -7,6 +7,7 @@ import com.soilhumidity.backend.dto.user.UserDeviceDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.geo.Point;
 
 import java.util.Date;
@@ -30,4 +31,7 @@ public class MeasurementDto {
     private List<SeedDto> eligibleSeeds;
 
     private Point point;
+
+    @Setter
+    private WeatherForecastResponse weather;
 }

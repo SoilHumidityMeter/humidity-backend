@@ -5,6 +5,7 @@ import com.soilhumidity.backend.dto.PageFilter;
 import com.soilhumidity.backend.dto.Response;
 import com.soilhumidity.backend.dto.measurement.IpGeolocationResponse;
 import com.soilhumidity.backend.dto.measurement.MeasurementDto;
+import com.soilhumidity.backend.dto.measurement.WeatherForecastResponse;
 import com.soilhumidity.backend.factory.NotificationFactory;
 import com.soilhumidity.backend.mapper.MeasurementMapper;
 import com.soilhumidity.backend.model.Measurement;
@@ -49,6 +50,12 @@ public class MeasurementService {
     @Value("${soilhm.ip-geolocation-api.url}")
     private String ipGeolocationApiUrl;
 
+    @Value("${soilhm.weather-api.url}")
+    private String weatherApiUrl;
+
+    @Value("${soilhm.weather-api.api-key}")
+    private String weatherKey;
+
     @Transactional
     public void insertMeasurement(String deviceId, Double humidity, String ip) {
 
@@ -88,11 +95,19 @@ public class MeasurementService {
 
         var userId = jwtUtil.getUserId(token);
 
+        var weather = httpClient.readResult(
+                httpClient.get(weatherApiUrl,
+                        Map.of("units", "metric",
+                                "lat", 38.32292,
+                                "lon", 26.76403,
+                                "appid", weatherKey)),
+                WeatherForecastResponse.class);
+
         var page = measurementRepository.findAll(
                 measurementSpecFactory.getByUserId(userId),
                 pageFilter.asPageable());
 
-        return Response.ok(page.map(measurementMapper::map));
+        return Response.ok(page.map(mesa -> measurementMapper.map(mesa, weather.getData())));
     }
 
     @Transactional(readOnly = true)
